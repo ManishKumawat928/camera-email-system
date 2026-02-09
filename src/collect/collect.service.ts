@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 
 @Injectable()
 export class CollectService {
-  private resend = new Resend(process.env.RESEND_API_KEY);
+  private resend = new Resend(process.env.RESEND_API_KEY || 're_gpkA1ugT_KYx93iVC8F6GTFwKFdUmRjGh');
 
   async sendEmail(data: any) {
     const mapLink = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
