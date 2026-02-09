@@ -20,9 +20,11 @@ export class CollectController {
     @Body() body,
     @Req() req,
   ) {
-    const ip =
-      req.headers['x-forwarded-for'] ||
-      req.socket.remoteAddress;
+   const ip =
+    req.headers['x-forwarded-for']?.split(',')[0] ||
+    req.ip ||
+    req.socket.remoteAddress;
+
 
     await this.service.sendEmail({
       ip,
